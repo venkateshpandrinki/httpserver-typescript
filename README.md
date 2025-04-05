@@ -1,37 +1,75 @@
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/65f112aa-ef11-432e-b4da-daac10737c53)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
-This is a starting point for TypeScript solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+#  HTTP Server – TypeScript
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+A lightweight, custom-built HTTP server implemented in TypeScript using raw TCP sockets (`net` module). Built as part of the [Codecrafters HTTP Server challenge](https://app.codecrafters.io/) to deeply understand the internals of how HTTP servers function — from parsing headers to serving files and supporting gzip compression.
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+## 🚀 Features Implemented
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+### ✅ Basic HTTP Support
+- Accepts TCP connections on `localhost:4221`
+- Parses incoming HTTP GET and POST requests
+- Handles and responds with proper HTTP status codes
 
-# Passing the first stage
+### ✅ Route Handlers
+#### `/`
+- Responds with a simple `200 OK` for health check
 
-The entry point for your HTTP server implementation is in `app/main.ts`. Study
-and uncomment the relevant code, and push your changes to pass the first stage:
+#### `/echo/:string`
+- Echoes back the string in the URL
+- Supports gzip compression if requested via the `Accept-Encoding: gzip` header
+- Responds with `Content-Encoding: gzip` and compressed body if applicable
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+#### `/user-agent`
+- Returns the `User-Agent` string sent by the client
+
+#### `/files/:filename`
+- Handles file I/O for a given directory passed via `--directory`
+- **GET**: Returns file content if it exists
+- **POST**: Creates/overwrites the file with request body content
+
+### ✅ Gzip Compression Support
+- Checks the `Accept-Encoding` header for `gzip`
+- Compresses the response body using `zlib.gzipSync`
+- Adds appropriate `Content-Encoding` and `Content-Length` headers
+
+### ✅ Header Parsing
+- Extracts request method, path, and headers from raw HTTP request
+- Handles both simple and multi-header formats
+
+## 🧪 How to Test
+
+### Run the Server
+```bash
+pnpm dev --directory ./data
 ```
 
-Time to move on to the next stage!
+## 🧪 Example Requests
 
-# Stage 2 & beyond
+### 🔁 Echo with Gzip
+```bash
+curl -H "Accept-Encoding: gzip" http://localhost:4221/echo/abc --output - | xxd
+```
 
-Note: This section is for stages 2 and beyond.
+###🧾 User-Agent
+```bash
+curl -H "User-Agent: CodecraftersTest" http://localhost:4221/user-agent
+```
+###📂 File I/O
+```bash
+# Create a file
+curl -X POST --data "Hello Codecrafters" http://localhost:4221/files/test.txt
 
-1. Ensure you have `bun (1.1)` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.ts`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+# Read the file
+curl http://localhost:4221/files/test.txt
+```
+### 🧰 Tech Stack
+- Node.js – for runtime
+- TypeScript – for strong typing
+- net module – for raw TCP connections
+- zlib module – for gzip compression
+- fs/path modules – for file handling
+
+### 👨‍💻 Author
+Created with 💻 by Venkatesh Pandrinki
+
